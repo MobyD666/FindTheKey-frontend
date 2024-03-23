@@ -61,6 +61,15 @@ onBeforeMount(() =>
   border-color: #666; /* Subtle border color change */
 }
 
+.button:disabled 
+ {
+  color: #999999; /* Light grey text */
+  background-color: #222; /* Dark background */
+  border-color: #222; /* Dark background */
+  cursor: not-allowed; /* Show a 'not allowed' cursor when hovering */
+}
+
+
 .editbutton
  {
     font-size: 24px; 

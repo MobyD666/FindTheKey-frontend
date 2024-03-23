@@ -204,10 +204,5 @@
   justify-content: center; /* Center children vertically */
 }
 
-/* Existing styles for .modal-overlay and .modal remain unchanged */
-
-
-
-
   </style>
   

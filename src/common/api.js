@@ -137,6 +137,16 @@ export async function sendRestart(mainToken)
         return(response);
 }
 
+export async function sendUnblock(mainToken)
+{
+        const response = await apiCall('/unblock',{mainToken:mainToken});
+        if (response==null) 
+        {
+            throw new Error('Network response was not ok.');
+        }
+        return(response);
+}
+
 export async function sendChange(mainToken,silent)
 {
         const response = await apiCall('/changekey',{mainToken:mainToken,silent:silent});

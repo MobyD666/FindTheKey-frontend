@@ -26,9 +26,9 @@
 
       <span v-show="config.showAdvanced">
         <div class="config-line" v-for="(item, index) in config.oncustom" :key="index">
-              <label>On <ComboBox v-model="config.oncustom[index].event" :options="onCustomEventOptions" />&nbsp;<TextInput v-model="config.oncustom[index].detail" v-show="(config.oncustom[index].event=='wheel_of_fortune_turned') || (config.oncustom[index].event=='tasks_task_failed') || (config.oncustom[index].event=='tasks_task_completed') " />:</label>
-              <div class="hint" v-if="(onCustomEventHints[item.event] != '') && (onCustomEventHints[item.event] != 'undefined')" >
-              {{ onCustomEventHints[item.event] }}
+              <label>On <ComboBox v-model="config.oncustom[index].event" :options="onCustomEventOptions" />&nbsp;<NumberInput v-model="config.oncustom[index].detail" v-show="onCustomEventDetails[item.event].showNumberDetail" /><TextInput v-model="config.oncustom[index].detail" v-show="onCustomEventDetails[item.event].showTextDetail" />:</label>
+              <div class="hint" v-if="(onCustomEventDetails[item.event].hint != '') && (onCustomEventDetails[item.event].hint != 'undefined')" >
+              {{ onCustomEventDetails[item.event].hint }}
               </div>
               <ComboList :options="onCustomOptions" v-model="config.oncustom[index].actions" />
         </div>
@@ -71,7 +71,7 @@
   function addCustom() 
   {
     if (props.config.oncustom == undefined) props.config.oncustom=[];
-    props.config.oncustom.push({event:"",detail:"",actions:[{ action: 'nothing' }]}); // Add a new item with default values
+    props.config.oncustom.push({event:"wheel_of_fortune_turned",detail:"",actions:[{ action: 'nothing' }]}); // Add a new item with default values
   }
 
   const onWrongOptions = 
@@ -104,7 +104,9 @@
   [
   { value: 'nothing', text: 'Do Nothing' },
   { value: 'unfreeze', text: 'Unfreeze the Lock' },
+  { value: 'freeze', text: 'Freeze the Lock' },  
   { value: 'unblock', text: 'Allow unlocking' },  
+  { value: 'block', text: 'Block unlocking' },  
   { value: 'addtime', text: 'Add time' },
   { value: 'removetime', text: 'Remove time' },  
   ];
@@ -131,14 +133,19 @@
   { value: 'wheel_of_fortune_turned', text: 'WoF turned' },
   { value: 'tasks_task_completed', text: 'task completed'},
   { value: 'tasks_task_failed', text: 'task failed' },
+  { value: 'on_guess_every', text: 'every x-th wrong guess' },
+  { value: 'on_guess_x', text: 'x-th wrong guess' },
 //  { value: 'dice_rolled', text: 'dice rolled' },
   ]
 
-  const onCustomEventHints=
+  const onCustomEventDetails=
   {
-    wheel_of_fortune_turned:'After Wheel of Fortune turn. Enter the exact text from WoF configuration into the textbox above to trigger only on that result or leave empty for all.',
-    tasks_task_completed:'When specific task has been completed. Enter the exact text from task configuration into the textbox above to trigger only on that specifi task or leave empty for all taks.',
-    tasks_task_failed:'When specific task has been failed. Enter the exact text from task configuration into the textbox above to trigger only on that specific task or leave empty for all tasks.',
+    wheel_of_fortune_turned:{showTextDetail:true,showNumberDetail:false,hint:'After Wheel of Fortune turn. Enter the exact text from WoF configuration into the textbox above to trigger only on that result or leave empty for all.'},
+    tasks_task_completed:{showTextDetail:true,showNumberDetail:false,hint:'When specific task has been completed. Enter the exact text from task configuration into the textbox above to trigger only on that specifi task or leave empty for all taks.'},
+    tasks_task_failed:{showTextDetail:true,showNumberDetail:false,hint:'When specific task has been failed. Enter the exact text from task configuration into the textbox above to trigger only on that specific task or leave empty for all tasks.'},
+    on_guess_every:{showTextDetail:false,showNumberDetail:true,hint:'On every x-th wrong key guess. On wrong events still apply.'},
+    on_guess_x:{showTextDetail:false,showNumberDetail:true,hint:'On exactly x-th wrong key guess. On wrong events still apply but this overrides "on every x-th" would they match both.'},
+    "":{showTextDetail:false,showNumberDetail:false,hint:''},
   }
   
   const props = defineProps(
