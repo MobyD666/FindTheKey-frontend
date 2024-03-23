@@ -125,6 +125,7 @@
   { value: 'changekey', text: 'Change the correct key', hint: 'Chance one in x to change the correct key',min:1,max:99999 },  
   { value: 'addfakekeys', text: 'Add fake keys', hint: '',min:1,max:100 },    
   { value: 'removefakekeys', text: 'Remove fake keys', hint: '',min:1,max:100 },      
+  { value: 'restartgame', text: 'Restart the game', hint: 'Restarts the whole minigame' },        
   ];
 
   

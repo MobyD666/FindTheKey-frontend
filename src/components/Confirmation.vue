@@ -88,7 +88,7 @@ function cancel()
 .cancel-button 
 {
   position: absolute; /* Position the button relative to the modal */
-  right: 3em; /* Position from the right */
+  right: 4em; /* Position from the right */
   bottom: 1em; /* Position from the bottom */
   /* Style your button as needed */
 }
