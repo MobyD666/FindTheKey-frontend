@@ -1,8 +1,7 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, defineEmits } from 'vue';
 import RemainingTime from '../components/RemainingTime.vue';
 
-import {  defineEmits  } from 'vue';
 
 const emit = defineEmits(['reloadBasicInfoNeeded']);
 

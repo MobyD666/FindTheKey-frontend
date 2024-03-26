@@ -62,7 +62,7 @@ const hint = computed(() =>
       if (props.modelValue[index].number==undefined) props.modelValue[index].number=1;
       props.modelValue[index].time=undefined;
     }
-    else if ((props.modelValue[index].action == 'addtime' ) || (props.modelValue[index].action == 'removetime' ) || (props.modelValue[index].action == 'settime' ))
+    else if ((props.modelValue[index].action == 'addtime' ) || (props.modelValue[index].action == 'removetime' ) || (props.modelValue[index].action == 'settime' ) || (props.modelValue[index].action == 'pillory' ) )
     {
       props.modelValue[index].number=undefined;        
       if (props.modelValue[index].time==undefined) props.modelValue[index].time=3600;

@@ -96,6 +96,7 @@ export function enableSaveListener(saveEvent)
    
 }
 
+
 export async function getBasicInfo(mainToken)
 {
         const response = await apiCall('/basicinfo',{mainToken:mainToken});
@@ -106,6 +107,18 @@ export async function getBasicInfo(mainToken)
         console.log('Basic info received',response);
         return(response);
 }
+
+export async function getBasicInfoCacheId(mainToken)
+{
+        const response = await apiCall('/basicinfocacheid',{mainToken:mainToken});
+        if (response==null) 
+        {
+            throw new Error('Network response was not ok.');
+        }
+        console.log('Basic info cache id received',response);
+        return(response);
+}
+
 
 export async function getKeyCandidates(mainToken)
 {

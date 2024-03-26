@@ -109,6 +109,7 @@
   { value: 'block', text: 'Block unlocking' },  
   { value: 'addtime', text: 'Add time' },
   { value: 'removetime', text: 'Remove time' },  
+  { value: 'pillory', text: 'Pillory' },    
   ];
 
   const onCustomOptions = 
@@ -126,6 +127,7 @@
   { value: 'addfakekeys', text: 'Add fake keys', hint: '',min:1,max:100 },    
   { value: 'removefakekeys', text: 'Remove fake keys', hint: '',min:1,max:100 },      
   { value: 'restartgame', text: 'Restart the game', hint: 'Restarts the whole minigame' },        
+  { value: 'pillory', text: 'Send to pillory', hint: 'Send wearer to the pillory',min:900},        
   ];
 
   

@@ -1,21 +1,46 @@
 <script setup>
 
-import { onMounted } from 'vue';
+import { onMounted,onUnmounted } from 'vue';
 import { ref,inject } from 'vue';
 
-import { getBasicInfo } from '../common/api.js'; 
+import { getBasicInfo, getBasicInfoCacheId } from '../common/api.js'; 
 
 import KeyHolder from '../components/KeyHolder.vue';
 import Wearer from '../components/Wearer.vue';
 
 const basicInfo = ref({});
+const basicInfoCacheId = ref({cacheId:null});
 const isLoading = ref(true);
+const isRefreshing = ref(false);
+
 
 let mainToken = null;
 
 async function handlereloadBasicInfoNeeded()
 {
-  fetchBasicInfo(mainToken);
+  isRefreshing.value=true;
+  fetchBasicInfoCacheId(mainToken);
+}
+
+async function fetchBasicInfoCacheId(mainToken)
+{
+  const response = await getBasicInfoCacheId(mainToken);
+  if (response?.cacheId != undefined) 
+  {
+    if (response.cacheId != basicInfoCacheId.value.cacheId)
+    {
+      console.log('basicInfoCacheId changed',basicInfoCacheId.value.cacheId,response.cacheId);      
+      basicInfoCacheId.value.cacheId=response.cacheId;
+      isRefreshing.value = true;
+      fetchBasicInfo(mainToken);
+    }
+  }
+  else
+  {
+    isRefreshing.value = true;
+    fetchBasicInfo(mainToken);
+  }
+
 }
 
 async function fetchBasicInfo(mainToken)
@@ -25,31 +50,49 @@ async function fetchBasicInfo(mainToken)
   {
     const response = await getBasicInfo(mainToken);
     basicInfo.value = response;
+    basicInfoCacheId.value.cacheId=response.cacheId;
+    console.log('Setting cacheId as (source basicinfo) ',response.cacheId);
   }
   finally 
   {
       isLoading.value = false;
+      isRefreshing.value = false;
       //window.parent.postMessage("[iFrameResizerChild]Ready", "*");
       window.dispatchEvent(new Event('resize'));
 
   }  
 }
 
+let intervalId = null;
+
 onMounted(() => 
 {
   mainToken = inject('mainToken');
   fetchBasicInfo(mainToken);
+  intervalId = setInterval( () => fetchBasicInfoCacheId(mainToken) ,30000);
+ 
 });
+
+onUnmounted(() => 
+  {
+    if (intervalId)  clearInterval(intervalId);
+  });
 
 
 </script>
 
 <template>
   <div class="main-container">
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading && !isRefreshing">Loading...</div>
     <div v-else  >
-      <KeyHolder  v-if="basicInfo.role=='keyholder'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"/>
-      <Wearer  v-if="basicInfo.role=='wearer'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded" />
+      <span v-if="basicInfo.valid">
+        <KeyHolder  v-if="basicInfo.role=='keyholder'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"/>
+        <Wearer  v-if="basicInfo.role=='wearer'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded" />
+      </span>
+      <span v-else >
+        Lock not found
+      </span>
+
     </div>
   </div>
 </template>

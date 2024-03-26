@@ -1,7 +1,7 @@
 <script setup>
 import KeyImage from '../components/KeyImage.vue';
 import { getKeyCandidates, sendGuessKey } from '../common/api.js'; 
-import { ref, onMounted, inject } from 'vue';
+import { ref, onMounted, inject,watch } from 'vue';
 
 const allkeys = ref([]);
 const isLoading = ref(true);
@@ -61,10 +61,19 @@ async function guessAgain()
     emit('reloadBasicInfoNeeded', '');
 }
 
+
 const props = defineProps(
     {
         basicInfo: Object
     });
+
+
+// Watch for changes in keyhash to reload the key grid if needed
+watch(() => props.basicInfo.keyHash, (newKeyHash) => 
+  {
+    fetchKeyCandidates(mainToken);
+   // console.log('Refreshig grid');
+  });    
 </script>
 
 <template>
