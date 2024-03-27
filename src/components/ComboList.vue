@@ -7,8 +7,8 @@
           :options="options" 
           @update:modelValue="(newValue) => updateValue(index, newValue)"
         />
-        <NumberInput v-if="item.number != undefined" :modelValue="item.number" @update:modelValue="(newValue) => updateValueNumber(index, newValue)"  :step="1" :min="item.min" :max="item.max" />
-        <TimeInput v-if="item.time != undefined" :modelValue="item.time" @update:modelValue="(newValue) => updateValueTime(index, newValue)"   />            
+        <NumberInput v-if="item.number != undefined" :modelValue="item.number" @update:modelValue="(newValue) => updateValueNumber(index, newValue)"  :step="1" :min="minmax[index].min" :max="minmax[index].max" />
+        <TimeInput v-if="item.time != undefined" :modelValue="item.time" @update:modelValue="(newValue) => updateValueTime(index, newValue)" :min="minmax[index].min" :max="minmax[index].max"  />            
         <button aria-label="Delete" @click="removeItem(index)" class="no-border-button">🗑️</button>
         </div>
         <div class="hint" v-if="(hint[index] != '') && (hint[index] != 'undefined')" >
@@ -50,6 +50,18 @@ const hint = computed(() =>
         hints.push(hint);
     });
     return(hints);
+});
+
+const minmax = computed(() =>
+{
+    let minmaxes=[];
+    props.modelValue.forEach( item=>
+    {
+        let minmax={min:1,max:9999999999};
+        props.options.filter(o=>o.value==item.action).forEach(o=>{minmax.min=o.min,minmax.max=o.max;});
+        minmaxes.push(minmax);
+    });
+    return(minmaxes);
 });
 
   
