@@ -4,12 +4,15 @@
       <label>Keys presented:</label><NumberInput v-model="config.keyspresented" :step="1" :min="1" :max="100" />
       </div>
       <div class="config-line">
+      <CheckBox v-model="config.hideconfig" label="Hide config details" description="Hide configuration details from lock overview" />
+      </div>
+      <div class="config-line">
             <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" />
-      </div>      
-      <div class="config-line">
+      <div class="config-line-spacer" />
+     
             <label>On correct guess:</label><ComboList :options="onCorrectOptions" v-model="config.oncorrect" />
-      </div>      
-      <div class="config-line">
+      <div class="config-line-spacer" />
+     
             <label>On wrong guess:</label><ComboList :options="onWrongOptions" v-model="config.onwrong" />
       </div>
       <div class="config-line warning" v-show="warnings.length>0">
@@ -31,6 +34,7 @@
               {{ onCustomEventDetails[item.event].hint }}
               </div>
               <ComboList :options="onCustomOptions" v-model="config.oncustom[index].actions" />
+              <button aria-label="Delete event" @click="removeCustom(index)" class="no-border-button">🗑️ Delete custom event</button>
         </div>
         <div class="config-line-addcustom">
           <button aria-label="Add" @click="addCustom">➕ Add custom event</button>
@@ -47,6 +51,8 @@
   import ComboList from '../components/ComboList.vue';
   import NumberInput from '../components/NumberInput.vue';
   import TextInput from '../components/TextInput.vue';
+  import CheckBox from '../components/CheckBox.vue';
+
 
   //const showAdvanced = ref(false);
   //const warnings = ref([]);
@@ -72,6 +78,11 @@
   {
     if (props.config.oncustom == undefined) props.config.oncustom=[];
     props.config.oncustom.push({event:"wheel_of_fortune_turned",detail:"",actions:[{ action: 'nothing' }]}); // Add a new item with default values
+  }
+
+  function removeCustom(index) 
+  {
+      props.config.oncustom.splice(index, 1);
   }
 
   const onWrongOptions = 
@@ -180,6 +191,15 @@
     flex-direction: column; /* Stack items vertically */
     justify-content: start; /* Align items to the start of the container */
     gap: 1em; /* Space between label and input */
+}
+
+.config-line-spacer
+{
+  height: .1em;
+  width: 100%;
+  background-color: #4b4646ad;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
 }
 
 .warning 

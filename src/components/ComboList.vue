@@ -15,7 +15,7 @@
           {{ hint[index] }}
         </div>
       </div>
-      <button aria-label="Add" @click="addItem">➕ Add</button>
+      <button aria-label="Add" @click="addItem">➕ Add action</button>
     </div>
   </template>
   
