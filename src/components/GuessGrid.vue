@@ -11,7 +11,7 @@ const guessResultLoading = ref(false);
 const guessResult = ref(false);
 const guessedKey=ref('');
 
-const emit = defineEmits(['reloadBasicInfoNeeded']);
+const emit = defineEmits(['reloadBasicInfoNeeded','postponeReload','stopReload']);
 
 async function fetchKeyCandidates(mainToken)
 {
@@ -46,6 +46,7 @@ async function guessKey(keyid)
   // Logic to handle the guess, using the index
   console.log(`Guessing key for index: ${keyid}`);
   // Additional logic here
+  emit('stopReload', '');
   const res=await sendGuessKey(mainToken, keyid);
   guessResultLoading.value=false;
   guessResult.value=res.guess;

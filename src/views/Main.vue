@@ -22,6 +22,8 @@ async function handlereloadBasicInfoNeeded()
   fetchBasicInfoCacheId(mainToken);
 }
 
+
+
 async function fetchBasicInfoCacheId(mainToken)
 {
   const response = await getBasicInfoCacheId(mainToken);
@@ -78,6 +80,21 @@ onUnmounted(() =>
     if (intervalId)  clearInterval(intervalId);
   });
 
+async function handlepostponeReload(value=30000)
+{
+  if ((value == undefined) || (value < 1) || (value =="")) value=30000;
+  if (intervalId)  
+    { 
+      clearInterval(intervalId);
+      intervalId = setInterval( () => fetchBasicInfoCacheId(mainToken) ,value);
+    }
+}  
+
+async function handlestopReload()
+{
+  if (intervalId)  clearInterval(intervalId);
+}  
+
 
 </script>
 
@@ -87,7 +104,7 @@ onUnmounted(() =>
     <div v-else  >
       <span v-if="basicInfo.valid">
         <KeyHolder  v-if="basicInfo.role=='keyholder'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"/>
-        <Wearer  v-if="basicInfo.role=='wearer'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded" />
+        <Wearer  v-if="basicInfo.role=='wearer'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"  @postponeReload="handlepostponeReload" @stopReload="handlestopReload" />
       </span>
       <span v-else >
         Lock not found

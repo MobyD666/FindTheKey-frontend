@@ -12,7 +12,7 @@ const confirmationMessage = ref('');
 
 let lastPromise={};
 
-const emit = defineEmits(['reloadBasicInfoNeeded']);
+const emit = defineEmits(['reloadBasicInfoNeeded','postponeReload','stopReload']);
 
 const props = defineProps(
     {
@@ -62,15 +62,29 @@ async function restart()
 
 async function reloadBasicInfo()
 {
-    emit('reloadBasicInfoNeeded', '');
+  emit('reloadBasicInfoNeeded', '');
 }
+
+async function postponeReload()
+{
+  emit('postponeReload', '');
+}
+
+async function stopReload()
+{
+  emit('stopReload', '');
+}
+
+
+
+
 </script>
 
 <template>
   <div class="content-card" style="width:90% !important;">
     <div v-if="basicInfo.gamestate=='started'">
       <ActionsDisplayInfo :basicInfo="basicInfo" @reloadBasicInfoNeeded="reloadBasicInfo"/>
-      <GuessGrid v-if="basicInfo.actionsRemaining != 0" :basicInfo="basicInfo"  @reloadBasicInfoNeeded="reloadBasicInfo" />
+      <GuessGrid v-if="basicInfo.actionsRemaining != 0" :basicInfo="basicInfo"  @reloadBasicInfoNeeded="reloadBasicInfo" @postponeReload="postponeReload" @stopReload="stopReload"/>
     </div>  
     <div v-if="basicInfo.gamestate=='finished'">
         <Confirmation :message="confirmationMessage" :inplace="false" :show="showConfirmation"  @confirmed="showConfirmation = false;  lastPromise.resolve(true);" @cancelled="showConfirmation = false;  lastPromise.resolve(false);"/>
