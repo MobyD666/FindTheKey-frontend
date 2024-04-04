@@ -2,7 +2,6 @@
     <div :class="{'modal-overlay': !inplace, 'inline-overlay': inplace}" v-show="edit">       
         <div :class="{'modal': !inplace, 'inline-modal': inplace}">
             <div class="modal-content">
-              {{ min }} .. {{ max }}
                 <div class="DurationSelector DurationSelector-center-items">
                 <TimeDigitsInput                    :editable="editable" :modelValue="Math.floor(modelValue / 86400)" :editname="'day'" :factor="86400" @update:modelValue="(newValue) => updateValue(newValue)"/>
                 <TimeDigitsInput                    :editable="editable" :modelValue="(Math.floor((modelValue % 86400)/3600))" :editname="'hour'" :factor="3600" @update:modelValue="(newValue) => updateValue(newValue)" />

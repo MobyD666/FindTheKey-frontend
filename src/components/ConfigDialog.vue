@@ -122,6 +122,7 @@
   { value: 'addtime', text: 'Add time' },
   { value: 'removetime', text: 'Remove time' },  
   { value: 'pillory', text: 'Send to pillory', hint: 'Send wearer to the pillory',min:900,max:86400},  
+  { value: 'restartgame', text: 'Restart the game', hint: 'Restarts the whole minigame' },        
   ];
 
   const onCustomOptions = 
