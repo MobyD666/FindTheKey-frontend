@@ -12,8 +12,8 @@
         <button @click="edit=false;" class="ok-button">Ok</button>
         </div>
     </div>
-    <div v-show="!edit" >
-        {{  timelabel }} <button @click="edit=true;" class="editbutton" aria-label="Edit" >✎</button>
+    <div v-show="!edit"  :class="{'inplacetext': noneditableinplace}">
+        {{  timelabel }} <button @click="edit=true;" class="editbutton" aria-label="Edit" v-show="editable">✎</button>
 
     </div>
   </template>
@@ -42,6 +42,10 @@
       inplace: {
         type: Boolean,
         default: true
+      },
+      noneditableinplace:{
+        type: Boolean,
+        default: false
       },
       min: {
         type: Number,
@@ -210,6 +214,11 @@
   display: flex; /* Use flexbox for internal layout */
   flex-direction: column; /* Stack children vertically */
   justify-content: center; /* Center children vertically */
+}
+
+.inplacetext
+{
+  display: inline;
 }
 
   </style>

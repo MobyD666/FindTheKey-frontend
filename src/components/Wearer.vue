@@ -1,6 +1,7 @@
 <script setup>
 import GuessGrid from '../components/GuessGrid.vue';
 import ActionsDisplayInfo from '../components/ActionsDisplayInfo.vue';
+import BlockListWearer from '../components/BlockListWearer.vue';
 import { sendRestart } from '../common/api.js'; 
 
 import { onMounted, inject, defineEmits, ref  } from 'vue';
@@ -55,14 +56,14 @@ async function restart()
      if (confirmed) 
      {
        const res=await sendRestart(mainToken);
-       emit('reloadBasicInfoNeeded', ''); 
+       emit('reloadBasicInfoNeeded', {}); 
      }
   } catch (error) { console.log("Error during confirmation dialog",error); }
 }  
 
-async function reloadBasicInfo()
+async function reloadBasicInfo(args={})
 {
-  emit('reloadBasicInfoNeeded', '');
+  emit('reloadBasicInfoNeeded', args);
 }
 
 async function postponeReload()
@@ -84,7 +85,10 @@ async function stopReload()
   <div class="content-card" style="width:90% !important;">
     <div v-if="basicInfo.gamestate=='started'">
       <ActionsDisplayInfo :basicInfo="basicInfo" @reloadBasicInfoNeeded="reloadBasicInfo"/>
-      <GuessGrid v-if="basicInfo.actionsRemaining != 0" :basicInfo="basicInfo"  @reloadBasicInfoNeeded="reloadBasicInfo" @postponeReload="postponeReload" @stopReload="stopReload"/>
+      <BlockListWearer :blocks="basicInfo.blocks" v-if="basicInfo.blocks.length>0" :seed="basicInfo.seed" />
+      <div v-if="basicInfo.blocks.length==0">
+        <GuessGrid v-if="basicInfo.actionsRemaining != 0" :basicInfo="basicInfo"  @reloadBasicInfoNeeded="reloadBasicInfo" @postponeReload="postponeReload" @stopReload="stopReload"/>
+      </div>
     </div>  
     <div v-if="basicInfo.gamestate=='finished'">
         <Confirmation :message="confirmationMessage" :inplace="false" :show="showConfirmation"  @confirmed="showConfirmation = false;  lastPromise.resolve(true);" @cancelled="showConfirmation = false;  lastPromise.resolve(false);"/>

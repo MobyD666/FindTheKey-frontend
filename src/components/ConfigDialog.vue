@@ -1,19 +1,28 @@
 <template>
     <div>
       <div class="config-line">
-      <label>Keys presented:</label><NumberInput v-model="config.keyspresented" :step="1" :min="1" :max="100" />
+        <label>Keys presented:</label><NumberInput v-model="config.keyspresented" :step="1" :min="1" :max="100" />
       </div>
       <div class="config-line">
-      <CheckBox v-model="config.hideconfig" label="Hide config details" description="Hide configuration details from lock overview" />
+        <CheckBox v-model="config.hideconfig" label="Hide config details" description="Hide configuration details from lock overview" />
+        <div class="config-line-spacer" />
+        <CheckBox v-model="config.unfairsenabled" label="Enable unfair actions" description="Allow the lock or keyholder to perform actions that are unfair" />
+        <!-- <CheckBox v-model="config.unfairskeyholderonly" label="Restrict to keyholer" description="No random unfairness - it is completely under the control of the keyholder"  v-show="config.unfairsenabled"/>-->
+        <span v-show="config.unfairsenabled" >
+          <label>Unfairness level:</label><ComboBox :options="unfairsleveloptions" v-model="config.unfairslevel" />
+          <div class="hint" v-if="(unfairsleveloptions[config.unfairslevel-1] != undefined) && (unfairsleveloptions[config.unfairslevel-1] != '') && (unfairsleveloptions[config.unfairslevel-1] != 'undefined')" >
+          {{ unfairsleveloptions[config.unfairslevel-1].hint }}
+        </div>
+        </span>
       </div>
       <div class="config-line">
-            <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" />
-      <div class="config-line-spacer" />
+        <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" />
+
+        <div class="config-line-spacer" />
+        <label>On correct guess:</label><ComboList :options="onCorrectOptions" v-model="config.oncorrect" />
+        <div class="config-line-spacer" />
      
-            <label>On correct guess:</label><ComboList :options="onCorrectOptions" v-model="config.oncorrect" />
-      <div class="config-line-spacer" />
-     
-            <label>On wrong guess:</label><ComboList :options="onWrongOptions" v-model="config.onwrong" />
+        <label>On wrong guess:</label><ComboList :options="onWrongOptions" v-model="config.onwrong" />
       </div>
       <div class="config-line warning" v-show="warnings.length>0">
         <div v-for="(item,index) in warnings" :key="index">
@@ -39,7 +48,7 @@
         <div class="config-line-addcustom">
           <button aria-label="Add" @click="addCustom">➕ Add custom event</button>
         </div>
-    </span>
+      </span>
     </div>
 
   </template>
@@ -69,6 +78,15 @@
       if ((states["block"]>0) && (!(states["unblock"]>=states["block"]))) warns.push("You have configured unlocking blocking, but no removal of the blocking. If you do not have other means to unlock the lock, you could be locked indefinetely even as the timer runs out.");
       //console.log(states);
       //console.log('warns',warns);
+      if ((props.config.unfairsenabled) && (! props.config.unfairskeyholderonly))
+      {
+        if (props.config.unfairslevel>3) 
+          warns.push("You have enabled the unfairness and configured its level to higher value. Expect it to severly affect the lock time and your ability to find the correct key.");
+        else
+          warns.push("You have enabled the unfairness. Expect it to affect the lock time and your ability to find the correct key.");
+
+
+      }
       return (warns);
       //return((props.basicInfo.role=="wearer")?'You':'Lockee');
     });
@@ -151,6 +169,8 @@
   { value: 'tasks_task_failed', text: 'task failed' },
   { value: 'on_guess_every', text: 'every x-th wrong guess' },
   { value: 'on_guess_x', text: 'x-th wrong guess' },
+  { value: 'knowablewrong', text: 'knowable wrong guess' },
+  
 //  { value: 'dice_rolled', text: 'dice rolled' },
   ]
 
@@ -161,9 +181,18 @@
     tasks_task_failed:{showTextDetail:true,showNumberDetail:false,hint:'When specific task has been failed. Enter the exact text from task configuration into the textbox above to trigger only on that specific task or leave empty for all tasks.'},
     on_guess_every:{showTextDetail:false,showNumberDetail:true,hint:'On every x-th wrong key guess. On wrong events still apply.'},
     on_guess_x:{showTextDetail:false,showNumberDetail:true,hint:'On exactly x-th wrong key guess. On wrong events still apply but this overrides "on every x-th" would they match both.'},
+    knowablewrong:{showTextDetail:false,showNumberDetail:false,hint:'When the user guesses key that was possible to know it was fake.'},
     "":{showTextDetail:false,showNumberDetail:false,hint:''},
   }
-  
+
+  const unfairsleveloptions=
+  [
+  { value: '1', text: 'Little bit unfair', hint: 'Almost fair - only events with very little impact' },
+  { value: '2', text: 'Spice it up', hint: 'Causual unfairness' },
+  { value: '3', text: 'A bit unfair', hint: 'Medium level of unfairness' },
+  { value: '4', text: 'Hurt me plenty', hint: 'Not fair at all' },
+  { value: '5', text: 'Absolutely unfair', hint: 'There is no fairness in the world' },
+  ];
   const props = defineProps(
     {
         config: Object

@@ -40,9 +40,9 @@ const basicInfoText = computed(() => {
   
 });
 
-async function updateTimerFromAPI()
+async function updateTimerFromAPI(args={})
 {
-    emit('reloadBasicInfoNeeded', '');
+    emit('reloadBasicInfoNeeded', args);
 }
 
 </script>

@@ -9,6 +9,7 @@ const guessGridVisible = ref(false);
 const guessResultVisible = ref(false);
 const guessResultLoading = ref(false);
 const guessResult = ref(false);
+const guessProcessedOk = ref(false);
 const guessedKey=ref('');
 
 const emit = defineEmits(['reloadBasicInfoNeeded','postponeReload','stopReload']);
@@ -47,9 +48,10 @@ async function guessKey(keyid)
   console.log(`Guessing key for index: ${keyid}`);
   // Additional logic here
   emit('stopReload', '');
-  const res=await sendGuessKey(mainToken, keyid);
+  const res=await sendGuessKey(mainToken, keyid); //{"guess":null,"guessprocessed":false}
   guessResultLoading.value=false;
   guessResult.value=res.guess;
+  guessProcessedOk.value=res.guessprocessed;
   guessResultVisible.value=true;
 }
 
@@ -85,6 +87,7 @@ watch(() => props.basicInfo.keyHash, (newKeyHash) =>
             <KeyImage :keyId="guessedKey" class="rotating" />
         </div>
         <div v-if="guessResultVisible" class="result">
+          <span v-if="guessProcessedOk">
             <div v-if="guessResult" >
                 Correct!
             </div>
@@ -94,6 +97,19 @@ watch(() => props.basicInfo.keyHash, (newKeyHash) =>
                     <button @click="guessAgain()" class="button">Guess again!</button>
                 </div>                
             </div>
+          </span>
+          <span v-else="guessProcessedOk">
+            <div  class="unabletoprocess">
+              <div class="key-image-container">
+              <img src="../assets/confused.png" alt="Unable to process guess" class="key-image" />
+              </div>
+                Unable to process guess... <br/>Please try again later...<br/>Sorry for any inconvenience this may have caused...<br/>
+                <div v-if="basicInfo.gamestate!='finished' &&  ( (basicInfo.actionsRemaining==-1) || (basicInfo.actionsRemaining>1))">
+                    <button @click="guessAgain()" class="button">Guess again!</button>
+                </div>                
+            </div>
+
+          </span>
 
         </div>
         <div class="guess-grid" v-if="guessGridVisible">
@@ -151,6 +167,13 @@ watch(() => props.basicInfo.keyHash, (newKeyHash) =>
     align-items: center; /* Center vertically */
     flex-direction: column;
     gap:1em;
+}
+
+.unabletoprocess
+{
+  font-size: 1.1rem;
+    font-weight: bold;
+    color: #d22000;
 }
 
 

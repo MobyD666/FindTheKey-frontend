@@ -179,3 +179,36 @@ export async function sendAddFakes(mainToken,count,silent=false)
         }
         return(response);
 }
+
+export async function sendBlockers(mainToken,blockers)
+{
+        const response = await apiCall('/setblockers',{mainToken:mainToken,blockers:blockers});
+        if (response==null) 
+        {
+            throw new Error('Network response was not ok.');
+        }
+        return(response);
+}
+
+export async function sendUnfairs(mainToken,unfairs)
+{
+        const response = await apiCall('/setunfairs',{mainToken:mainToken,unfairs:unfairs});
+        if (response==null) 
+        {
+            throw new Error('Network response was not ok.');
+        }
+        return(response);
+}
+
+export async function sendUnfairSettings(mainToken,unfairSettings)
+{
+        const response = await apiCall('/setunfairsettings',{mainToken:mainToken,unfairsettings:unfairSettings});
+        if (response==null) 
+        {
+            throw new Error('Network response was not ok.');
+        }
+        return(response);
+}
+
+
+

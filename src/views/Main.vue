@@ -7,6 +7,7 @@ import { getBasicInfo, getBasicInfoCacheId } from '../common/api.js';
 
 import KeyHolder from '../components/KeyHolder.vue';
 import Wearer from '../components/Wearer.vue';
+import Loader from '../components/Loader.vue';
 
 const basicInfo = ref({});
 const basicInfoCacheId = ref({cacheId:null});
@@ -16,10 +17,17 @@ const isRefreshing = ref(false);
 
 let mainToken = null;
 
-async function handlereloadBasicInfoNeeded()
+async function handlereloadBasicInfoNeeded(args={})
 {
   isRefreshing.value=true;
-  fetchBasicInfoCacheId(mainToken);
+  if (args?.force==true)
+  {
+    fetchBasicInfo(mainToken);
+  }
+  else
+  {
+    fetchBasicInfoCacheId(mainToken);
+  }
 }
 
 
@@ -93,6 +101,12 @@ async function handlepostponeReload(value=30000)
 async function handlestopReload()
 {
   if (intervalId)  clearInterval(intervalId);
+  intervalId=null;
+}  
+
+async function handleRestartReload()
+{
+  if (intervalId==null)  intervalId = setInterval( () => fetchBasicInfoCacheId(mainToken) ,30000);
 }  
 
 
@@ -100,10 +114,10 @@ async function handlestopReload()
 
 <template>
   <div class="main-container">
-    <div v-if="isLoading && !isRefreshing">Loading...</div>
+    <div v-if="isLoading && !isRefreshing"><Loader /></div>
     <div v-else  >
       <span v-if="basicInfo.valid">
-        <KeyHolder  v-if="basicInfo.role=='keyholder'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"/>
+        <KeyHolder  v-if="basicInfo.role=='keyholder'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded" @stopReload="handlestopReload" @restartReload="handleRestartReload" />
         <Wearer  v-if="basicInfo.role=='wearer'" v-model:basicInfo="basicInfo" @reloadBasicInfoNeeded="handlereloadBasicInfoNeeded"  @postponeReload="handlepostponeReload" @stopReload="handlestopReload" />
       </span>
       <span v-else >

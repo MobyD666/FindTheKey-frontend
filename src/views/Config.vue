@@ -1,5 +1,6 @@
 <script setup>
    import ConfigDialog from '../components/ConfigDialog.vue';
+   import Loader from '../components/Loader.vue';
 
    import { reactive } from 'vue';
    import { onMounted } from 'vue';
@@ -61,7 +62,7 @@ onMounted(() =>
       Find the Key is an extension where the goal is to find the correct key from a group of keys. Depending on the configuration, it can be a game of skill, a game of luck, or something in between.
       Documentation is available <a href="https://ext-prod2.techspace.cz/ftk/docs/docs/ftk/" target="_blank">here</a>.
     </div>
-    <div v-if="isLoading">Loading...</div>
+    <div v-if="isLoading"><Loader /></div>
     <ConfigDialog v-else v-model:config="config" />
   </div>
 </template>

@@ -1,10 +1,10 @@
 <template>
     <span class="number-input">
       
-      <input type="number" :value="modelValue" @input="updateValue($event.target.value)" :min="min" :max="max">
-      <button @click="decrement">-</button>
+      <input type="number" :value="modelValue" @input="updateValue($event.target.value)" :min="min" :max="max" :disabled="disabled">
+      <button @click="decrement" v-show="!disabled">-</button>
       &nbsp;
-      <button @click="increment">+</button>
+      <button @click="increment" v-show="!disabled">+</button>
     </span>
   </template>
   
@@ -27,6 +27,10 @@
       max: {
       type: Number,
         default: 99999
+      },
+      disabled: {
+        type:Boolean,
+        default: false
       }
     },
     methods: {
