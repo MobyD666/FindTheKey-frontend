@@ -1,7 +1,7 @@
 <template>
     <span class="combo-box">
       <select :value="props.modelValue" @change="onSelectChange">
-        <option v-for="option in props.options" :key="option.value" :value="option.value">
+        <option v-for="option in optionsFiltered" :key="option.value" :value="option.value">
         {{ option.text }}
     </option>
   </select>
@@ -9,7 +9,8 @@
   </template>
   
   <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { faKitchenSet } from '@fortawesome/free-solid-svg-icons';
+import { defineProps, defineEmits, computed } from 'vue';
 
 const props = defineProps({
   modelValue: {
@@ -19,10 +20,20 @@ const props = defineProps({
   options: {
     type: Array,
     required: true
+  },
+  showall: {
+    type: Boolean,
+    require:false,
+    default:false
   }
+
 });
 
 const emit = defineEmits(['update:modelValue']);
+
+const optionsFiltered = computed(() => 
+     ( props.options.filter( o => props.showall || (!(o.hidebydefault===true)) || (o.value==props.modelValue)))
+  );
 
 function onSelectChange(event) {
   // Emit the 'update:modelValue' event when the selection changes

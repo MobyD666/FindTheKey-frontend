@@ -9,20 +9,89 @@
         <CheckBox v-model="config.unfairsenabled" label="Enable unfair actions" description="Allow the lock or keyholder to perform actions that are unfair" />
         <!-- <CheckBox v-model="config.unfairskeyholderonly" label="Restrict to keyholer" description="No random unfairness - it is completely under the control of the keyholder"  v-show="config.unfairsenabled"/>-->
         <span v-show="config.unfairsenabled" >
-          <label>Unfairness level:</label><ComboBox :options="unfairsleveloptions" v-model="config.unfairslevel" />
+          <label>Unfairness level:</label><ComboBox :options="unfairsleveloptions" v-model="config.unfairslevel" :showall="config.showAdvanced" />
           <div class="hint" v-if="(unfairsleveloptions[config.unfairslevel-1] != undefined) && (unfairsleveloptions[config.unfairslevel-1] != '') && (unfairsleveloptions[config.unfairslevel-1] != 'undefined')" >
           {{ unfairsleveloptions[config.unfairslevel-1].hint }}
+          </div>  
+        <div class="config-line" v-if="config.unfairslevel==-1">
+          <div v-if="showCustom">
+            
+            <div class="buttons-sidebyside">
+              Blockers:
+            </div>
+            <div v-for="(item, index) in config.startupBlockers" :key="index" class="" >
+              <div class="item">
+                <BlockerItemKeyholder 
+                  :modelValue="item" 
+                  @update:modelValue="(newValue) => updateBlockerValue(index, newValue)"
+                  @deleteblocker="()=>deleteBlocker(index)"
+                  :disabled="false"
+                />
+              </div>  
+            </div>                
+                
+            
+            <div class="buttons-sidebyside" >
+              <ComboBox 
+                :modelValue="addBlockerType" 
+                :options="addBlockerOptions" 
+                @update:modelValue="(newValue) => addBlockerType=newValue"
+                
+              />
+              <button aria-label="Add" @click="addBlocker()"  class="standardbutton">➕ Add blocker</button>
+            </div>  
+
+            <div class="buttons-sidebyside">
+              Global unfairness settings:
+            </div>
+            <div class="centered" >
+              <SliderList :modelValue="startupUnfairSettingsComputed" :enabled="true"  @update:model-value=" (value)=>updateUnfairSettings(value)"/>
+            </div>
+
+
+            <div class="buttons-sidebyside">
+              Individual unfairness events:
+            </div>
+            <span v-for="(item, index) in config.startupUnfairs" :key="index" class="" >
+              <div class="item" >
+                <UnfairItem 
+                  :modelValue="item" 
+                  @update:modelValue="(newValue) => updateUnfairValue(index, newValue)"
+                  @deleteunfair="()=>deleteUnfair(index)"
+                  :disabled="false"
+                  :options="addUnfairOptions"
+                  :currentguess="1"
+                />
+              </div>
+            </span>
+
+            <div class="buttons-sidebyside">
+              <ComboBox 
+                :modelValue="addUnfairType" 
+                :options="addUnfairOptions" 
+                @update:modelValue="(newValue) => addUnfairType=newValue"
+              />
+              <button aria-label="Add" @click="addUnfair()" class="standardbutton">➕ Add</button>
+            </div>
+
+          </div>
+          <div v-else="true" class="centered" >
+            Spoiler warning: Setting the custom options will reveal inner workings of the unfairness system. If you want to continue, click this button 
+            <button aria-label="Show custom unfairness config" @click="prepareUnfairConfig();showCustom=true;" >Show custom options</button> 
+          </div>
         </div>
+
+
         </span>
       </div>
       <div class="config-line">
-        <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" />
+        <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" :showall="config.showAdvanced" />
 
         <div class="config-line-spacer" />
-        <label>On correct guess:</label><ComboList :options="onCorrectOptions" v-model="config.oncorrect" />
+        <label>On correct guess:</label><ComboList :options="onCorrectOptions" v-model="config.oncorrect" :showall="config.showAdvanced" />
         <div class="config-line-spacer" />
      
-        <label>On wrong guess:</label><ComboList :options="onWrongOptions" v-model="config.onwrong" />
+        <label>On wrong guess:</label><ComboList :options="onWrongOptions" v-model="config.onwrong" :showall="config.showAdvanced" />
       </div>
       <div class="config-line warning" v-show="warnings.length>0">
         <div v-for="(item,index) in warnings" :key="index">
@@ -48,6 +117,10 @@
         <div class="config-line-addcustom">
           <button aria-label="Add" @click="addCustom">➕ Add custom event</button>
         </div>
+        <div class="config-line">
+          <CheckBox v-model="config.disableplayerrestart" label="Wearer restart disabled" description="If checked, then the wearer will not be able to restart the minigame after it is finished." />
+        </div>
+        
       </span>
     </div>
 
@@ -63,8 +136,39 @@
   import CheckBox from '../components/CheckBox.vue';
 
 
-  //const showAdvanced = ref(false);
+  
+  import SliderList from '../components/SliderList.vue';
+  import UnfairItem from '../components/UnfairItem.vue';
+  import BlockerItemKeyholder from '../components/BlockerItemKeyholder.vue';
+  import {settingsDefs,addBlockerOptions,addUnfairOptions,defaultStartupUnfairSettings} from '../components/UnfairConsts.js';
+
+
+  const showCustom = ref(false);
   //const warnings = ref([]);
+
+  const startupUnfairSettingsComputed = computed(() => 
+  {
+      let v=[];
+      Object.keys(defaultStartupUnfairSettings.user).forEach (k => 
+      {
+        v.push(
+          {
+            key:k,
+            name: k, 
+            value:props.config.startupUnfairSettings.user[k], 
+            description: settingsDefs[k]?.description,
+            min:settingsDefs[k]?.min, 
+            max:settingsDefs[k]?.max,
+            default:defaultStartupUnfairSettings.default[k], 
+            type:settingsDefs[k]?.type
+          }
+        );
+      });
+      console.log('calculated unfair settings',v);
+      return(v);
+  });
+
+
   const warnings = computed(() => 
     {
       let warns=[];
@@ -107,9 +211,12 @@
   [
   { value: 'nothing', text: 'Do Nothing' },
   { value: 'freeze', text: 'Freeze the Lock' },
+  { value: 'unfreeze', text: 'Unfreeze the Lock', hidebydefault:true },
+  { value: 'togglefreeze', text: 'Freeze/Unfreeze the Lock' },    
   { value: 'block', text: 'Block unlocking' },  
+  { value: 'unblock', text: 'Allow unlocking', hidebydefault:true },  
   { value: 'addtime', text: 'Add time' },
-  { value: 'removetime', text: 'Remove time' },    
+  { value: 'removetime', text: 'Remove time', hidebydefault:true },    
   { value: 'change', text: 'Change fake keys',min:0,max:99999 , hint: 'Change x of the fake keys' },
   { value: 'resetkeys', text: 'Change all keys', hint: 'Chance one in x to change all keys (the correct one and all fakes)' },
   { value: 'changekey', text: 'Change the correct key', hint: 'Chance one in x to change the correct key',min:1,max:99999 },  
@@ -124,9 +231,12 @@
   [
   { value: 'nothing', text: 'Do Nothing' },
   { value: 'freeze', text: 'Freeze the Lock' },
+  { value: 'unfreeze', text: 'Unfreeze the Lock' , hidebydefault:true},
+  { value: 'togglefreeze', text: 'Freeze/Unfreeze the Lock' , hidebydefault:true },    
+  { value: 'unblock', text: 'Allow unlocking' , hidebydefault:true },
   { value: 'block', text: 'Block unlocking' },  
   { value: 'addtime', text: 'Add time' },
-  { value: 'removetime', text: 'Remove time' },  
+  { value: 'removetime', text: 'Remove time' , hidebydefault:true },  
   { value: 'pillory', text: 'Send to pillory', hint: 'Send wearer to the pillory',min:900,max:86400},
   ];
   
@@ -134,10 +244,11 @@
   [
   { value: 'nothing', text: 'Do Nothing' },
   { value: 'unfreeze', text: 'Unfreeze the Lock' },
-  { value: 'freeze', text: 'Freeze the Lock' },  
+  { value: 'freeze', text: 'Freeze the Lock', hidebydefault:true },  
+  { value: 'togglefreeze', text: 'Freeze/Unfreeze the Lock' },    
   { value: 'unblock', text: 'Allow unlocking' },  
-  { value: 'block', text: 'Block unlocking' },  
-  { value: 'addtime', text: 'Add time' },
+  { value: 'block', text: 'Block unlocking' , hidebydefault:true },  
+  { value: 'addtime', text: 'Add time' , hidebydefault:true },
   { value: 'removetime', text: 'Remove time' },  
   { value: 'pillory', text: 'Send to pillory', hint: 'Send wearer to the pillory',min:900,max:86400},  
   { value: 'restartgame', text: 'Restart the game', hint: 'Restarts the whole minigame' },        
@@ -148,6 +259,7 @@
   { value: 'nothing', text: 'Do Nothing' },
   { value: 'freeze', text: 'Freeze the Lock' },
   { value: 'unfreeze', text: 'Unfreeze the Lock' },  
+  { value: 'togglefreeze', text: 'Freeze/Unfreeze the Lock' },  
   { value: 'block', text: 'Block unlocking' },  
   { value: 'unblock', text: 'Allow unlocking' },  
   { value: 'addtime', text: 'Add time' },
@@ -170,6 +282,11 @@
   { value: 'on_guess_every', text: 'every x-th wrong guess' },
   { value: 'on_guess_x', text: 'x-th wrong guess' },
   { value: 'knowablewrong', text: 'knowable wrong guess' },
+  { value: 'guess_timer_failed', text: 'guess timer incorrect' },
+  { value: 'guess_timer_success', text: 'guess timer correct' },
+  { value: 'link_time_changed_removed', text: 'share link time removed' },
+  { value: 'link_time_changed_added', text: 'share link time added' },
+
   
 //  { value: 'dice_rolled', text: 'dice rolled' },
   ]
@@ -182,6 +299,10 @@
     on_guess_every:{showTextDetail:false,showNumberDetail:true,hint:'On every x-th wrong key guess. On wrong events still apply.'},
     on_guess_x:{showTextDetail:false,showNumberDetail:true,hint:'On exactly x-th wrong key guess. On wrong events still apply but this overrides "on every x-th" would they match both.'},
     knowablewrong:{showTextDetail:false,showNumberDetail:false,hint:'When the user guesses key that was possible to know it was fake.'},
+    guess_timer_failed:{showTextDetail:false,showNumberDetail:false,hint:'When the user guesses the timer using Guess the Timer etension and the guess is wrong.'},
+    guess_timer_success:{showTextDetail:false,showNumberDetail:false,hint:'When the user guesses the timer using Guess the Timer etension and the guess is correct.'},
+    link_time_changed_added:{showTextDetail:false,showNumberDetail:false,hint:'When the user receives add time vote on shared link.'},
+    link_time_changed_removed:{showTextDetail:false,showNumberDetail:false,hint:'When the user receives remove time vote on shared link.'},    
     "":{showTextDetail:false,showNumberDetail:false,hint:''},
   }
 
@@ -192,6 +313,7 @@
   { value: '3', text: 'A bit unfair', hint: 'Medium level of unfairness' },
   { value: '4', text: 'Hurt me plenty', hint: 'Not fair at all' },
   { value: '5', text: 'Absolutely unfair', hint: 'There is no fairness in the world' },
+  { value: '-1', text: 'Custom', hint: 'Perfectly customized portion of unfairness', hidebydefault:true },
   ];
   const props = defineProps(
     {
@@ -199,6 +321,70 @@
     });
   
   
+
+const addBlockerType = ref ('add_time');
+
+function addBlocker()
+{
+  let newBlocker={type: addBlockerType.value};
+  if (newBlocker.type=='add_time') newBlocker.time=3600;
+  console.log('Props pre',props.config);
+  props.config.startupBlockers.push(newBlocker);
+  console.log(props.config);
+}
+
+function deleteBlocker(index)
+{
+  props.config.startupBlockers.splice(index,1);
+ // console.log(localBlockers.value);
+}
+
+async function updateBlockerValue(index, newValue)
+{
+  props.config.startupBlockers[index]=newValue;
+}
+
+async function updateUnfairSettings(newValue)
+{
+
+   console.log('newValue',newValue);
+   newValue.forEach ( (v) => {props.config.startupUnfairSettings.user[v.key]=v.value;} );
+   console.log(props.config);
+}
+
+function prepareUnfairConfig()
+{
+  console.log ('Config pre preparation',props.config);
+  if (props.config.startupBlockers==undefined) props.config.startupBlockers=[];
+  if (props.config.startupUnfairs==undefined) props.config.startupUnfairs=[];
+  if (props.config.startupUnfairSettings==undefined) props.config.startupUnfairSettings=defaultStartupUnfairSettings;
+  
+  
+}
+
+
+function deleteUnfair(index)
+{
+  props.config.startupUnfairs.splice(index,1);
+ // console.log(localUnfairs.value);
+}
+
+async function updateUnfairValue(index, newValue)
+{
+  props.config.startupUnfairs[index]=newValue;
+}
+
+const addUnfairType = ref ('hidekeys');
+
+function addUnfair()
+{
+  let newUnfair={type: addUnfairType.value,guess:1};
+  if (newUnfair.type=='delayactions') newUnfair.time=3600;
+  props.config.startupUnfairs.push(newUnfair);
+}
+
+
+
   
   </script>
 

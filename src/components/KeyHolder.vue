@@ -12,6 +12,8 @@ import KeyGrid from '../components/KeyGrid.vue';
 import UnfairItem from '../components/UnfairItem.vue';
 import BlockerItemKeyholder from '../components/BlockerItemKeyholder.vue';
 import ComboBox from '../components/ComboBox.vue';
+import MessageLogList from '../components/MessageLogList.vue';
+
 
 const emit = defineEmits(['reloadBasicInfoNeeded','restartReload']);
 
@@ -60,25 +62,8 @@ const showUnfairSettings = ref (false);
 const showUnfairs = ref (false);
 const showBlockers = ref (false);
 
-const settingsDefs = 
-{
-  unabletoguess: {min:0,max:100,type:'slider',description:'Unable to guess %'},
-  delayactions: {min:0,max:100,type:'slider',description:'Delay actions %'},
-  hidekeys: {min:0,max:100,type:'slider',description:'Hide keys %'},
-  doubleactions: {min:0,max:100,type:'slider',description:'Double actions %'},
-  twins: {min:0,max:100,type:'slider',description:'Twins %'},
-  nocorrectkey: {min:0,max:100,type:'slider',description:'No correct key %'},
-  liecorrect: {min:0,max:100,type:'slider',description:'Lie correct %'},
-  blocktime: {min:0,max:100,type:'slider',description:'Add time blocker %'},
-  blocktime_time: {min:0,max:8640000,type:'time',description:'Add time blocker mean time'},
-  delayactions_time: {min:0,max:8640000,type:'time',description:'Delay actions mean time'},
-  blockverification: {min:0,max:100,type:'slider',description:'Verification blocker %'},
-  blockshared_link: {min:0,max:100,type:'slider',description:'Shared link blocker %'},
-  blockturn_wheel_of_fortune: {min:0,max:100,type:'slider',description:'WoF blocker %'},
-  blocktask_completed: {min:0,max:100,type:'slider',description:'Task completed blocker %'},
-  blocktask_failed: {min:0,max:100,type:'slider',description:'Task failed blocker %'},
+import {settingsDefs,addBlockerOptions,addUnfairOptions} from '../components/UnfairConsts.js';
 
-};
 
 /*
 const sl = ref ([
@@ -250,6 +235,8 @@ function addBlocker()
   localBlockers.value.push(newBlocker);
 }
 
+
+
 function cancelUnfairSettings()
 {
   unfairSettingsEdit.value=false;
@@ -332,29 +319,7 @@ const unfairs = computed(() =>
     return(unfairs);
 });
 
-const addBlockerOptions=
-[
-  { value: 'add_time', text: 'Add Time' },
-  { value: 'freeze', text: 'Freeze' },
-  { value: 'verification', text: 'Verify lock' },
-  { value: 'shared_link', text: 'Get shared link vote' },
-  { value: 'turn_wheel_of_fortune', text: 'Turn WoF' },
-  { value: 'task_completed', text: 'Complete task' },
-  { value: 'task_failed', text: 'Fail task' },
-  { value: 'jigsaw_complete', text: 'Complete jigsaw' },
 
-];
-
-const addUnfairOptions=
-[
-  { value: 'unabletoguess', text: 'Unable to guess' },
-  { value: 'liecorrect', text: 'Lie if correct' },
-  { value: 'hidekeys', text: 'Hide keys' },
-  { value: 'doubleactions', text: 'Double actions' },
-  { value: 'twins', text: 'Twins' },
-  { value: 'nocorrectkey', text: 'No correct key' },
-  { value: 'delayactions', text: 'Delay on correct actions' },
-];
 
 </script>
 
@@ -385,6 +350,10 @@ const addUnfairOptions=
         <div class="keyholder-line-spacer" />
         <header>Remove fake keys:</header>
         <NumberInput  v-model="removefakecount"   :step="1" :min="1" :max="100" /><button @click="addFakes(-1*removefakecount,true)" class="button" :disabled="basicInfo.trusted!==true">Remove fake keys (silent)</button><button @click="addFakes(-1*removefakecount,false)" class="button">Remove fake keys (show in log)</button>
+      </div>
+      <div class="keyholder-line">
+        <header>Find the Key log:</header>
+        <MessageLogList :log="basicInfo.gameLog"/>
       </div>  
       <div class="keyholder-line" v-if="basicInfo.knownablewrongs">
         Keys that wearer could have known are fake:  
@@ -394,7 +363,7 @@ const addUnfairOptions=
         <KeyGrid :keys="basicInfo.knownablewrongs"  v-if="showKnowableFakes"/>
       </div>
       <div class="keyholder-line" > 
-        <div class="buttons-sidebyside">Guess blockers:
+        <div class="buttons-sidebyside">Currently active guess blockers:
           <button aria-label="Show guess blockers" @click="showBlockers=true" v-show="showBlockers!==true">Show</button>
           <button aria-label="Hide guess blockers" @click="showBlockers=false" v-show="showBlockers">Hide</button>
         </div>
@@ -468,7 +437,7 @@ const addUnfairOptions=
               />
               <button aria-label="Add" @click="addUnfair()" v-show="unfairsEdit" class="standardbutton">➕ Add</button>
             </div>
-            <button aria-label="Edit blockers" @click="unfairsEdit=true" v-show="!unfairsEdit" >Edit unfair events</button>
+            <button aria-label="Edit unfair events" @click="unfairsEdit=true" v-show="!unfairsEdit" >Edit unfair events</button>
             <div class="buttons-sidebyside">
               <button aria-label="Cancel edits" @click="cancelUnfairs();" v-show="unfairsEdit" class="standardbutton cancelbutton" >Cancel edits</button>
               <button aria-label="Save unfair events" @click="saveUnfairs()" v-show="unfairsEdit"  class="standardbutton okbutton">Save unfair events</button>

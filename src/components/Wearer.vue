@@ -92,7 +92,8 @@ async function stopReload()
     </div>  
     <div v-if="basicInfo.gamestate=='finished'">
         <Confirmation :message="confirmationMessage" :inplace="false" :show="showConfirmation"  @confirmed="showConfirmation = false;  lastPromise.resolve(true);" @cancelled="showConfirmation = false;  lastPromise.resolve(false);"/>
-        <button @click="restart()" class="button">Restart the game</button>
+        You have found the correct key!<br/>
+        <button @click="restart()" class="button" v-if="basicInfo.disableplayerrestart != true">Restart the game</button>
     </div>
     </div>
 </template>

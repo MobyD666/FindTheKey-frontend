@@ -6,6 +6,7 @@
           :modelValue="item.action" 
           :options="options" 
           @update:modelValue="(newValue) => updateValue(index, newValue)"
+          :showall="showall"
         />
         <NumberInput v-if="item.number != undefined" :modelValue="item.number" @update:modelValue="(newValue) => updateValueNumber(index, newValue)"  :step="1" :min="minmax[index].min" :max="minmax[index].max" />
         <TimeInput v-if="item.time != undefined" :modelValue="item.time" @update:modelValue="(newValue) => updateValueTime(index, newValue)" :min="minmax[index].min" :max="minmax[index].max"  />            
@@ -37,6 +38,11 @@
   options: {
     type: Array,
     required: true
+  },
+  showall: {
+    type: Boolean,
+    require:false,
+    default:false
   }
 });
 

@@ -4,7 +4,7 @@
             <button aria-label="Delete" @click="deleteBlocker()" class="no-border-button" v-show="! disabled">🗑️</button>            
     </div>
     <div v-if="modelValue.type=='freeze'">
-        Wearer cannot guess when the lock is fronzen. 
+        Wearer cannot guess when the lock is frozen. 
             <button aria-label="Delete" @click="deleteBlocker()" class="no-border-button" v-show="! disabled">🗑️</button>            
     </div>    
     <div v-if="modelValue.type=='verification'">
