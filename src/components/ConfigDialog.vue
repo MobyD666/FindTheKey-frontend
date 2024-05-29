@@ -8,15 +8,18 @@
         <div class="config-line-spacer" />
         <CheckBox v-model="config.unfairsenabled" label="Enable unfair actions" description="Allow the lock or keyholder to perform actions that are unfair" />
         <!-- <CheckBox v-model="config.unfairskeyholderonly" label="Restrict to keyholer" description="No random unfairness - it is completely under the control of the keyholder"  v-show="config.unfairsenabled"/>-->
-        <span v-show="config.unfairsenabled" >
+        <span v-show="config.unfairsenabled" class="centered" >
           <label>Unfairness level:</label><ComboBox :options="unfairsleveloptions" v-model="config.unfairslevel" :showall="config.showAdvanced" />
           <div class="hint" v-if="(unfairsleveloptions[config.unfairslevel-1] != undefined) && (unfairsleveloptions[config.unfairslevel-1] != '') && (unfairsleveloptions[config.unfairslevel-1] != 'undefined')" >
           {{ unfairsleveloptions[config.unfairslevel-1].hint }}
           </div>  
-        <div class="config-line" v-if="config.unfairslevel==-1">
+        <div class="" v-if="(config.unfairslevel==-1) && (showCustom)">
           <div v-if="showCustom">
+            <div class="infotext">
+              You can read more in keyholder documentation <a href="https://ext-prod2.techspace.cz/ftk/docs/docs/keyholder" target="_blank">here</a>.
+            </div>
             
-            <div class="buttons-sidebyside">
+            <div class="subheader">
               Blockers:
             </div>
             <div v-for="(item, index) in config.startupBlockers" :key="index" class="" >
@@ -41,7 +44,7 @@
               <button aria-label="Add" @click="addBlocker()"  class="standardbutton">➕ Add blocker</button>
             </div>  
 
-            <div class="buttons-sidebyside">
+            <div class="subheader">
               Global unfairness settings:
             </div>
             <div class="centered" >
@@ -49,7 +52,7 @@
             </div>
 
 
-            <div class="buttons-sidebyside">
+            <div class="subheader">
               Individual unfairness events:
             </div>
             <span v-for="(item, index) in config.startupUnfairs" :key="index" class="" >
@@ -75,14 +78,14 @@
             </div>
 
           </div>
-          <div v-else="true" class="centered" >
-            Spoiler warning: Setting the custom options will reveal inner workings of the unfairness system. If you want to continue, click this button 
-            <button aria-label="Show custom unfairness config" @click="prepareUnfairConfig();showCustom=true;" >Show custom options</button> 
-          </div>
+        </div>
+        <div v-if="(config.unfairslevel==-1) && (config.showAdvanced) && (!showCustom)" class="config-line" >
+          Spoiler warning: Setting the custom options will reveal inner workings of the unfairness system. If you want to continue, click this button 
+          <button aria-label="Show custom unfairness config" @click="prepareUnfairConfig();showCustom=true;" >Show custom options</button> 
         </div>
 
-
-        </span>
+      </span>
+        
       </div>
       <div class="config-line">
         <label>On start:</label><ComboList :options="onStartOptions" v-model="config.onstart" :showall="config.showAdvanced" />
@@ -447,5 +450,34 @@ function addUnfair()
     font-size: 85%;
     flex-basis: 100%;
 }
+
+.subheader
+{
+  font-size:120%;
+  font-weight:bold;
+  text-align: center;
+  width: 100%;
+  margin-top: 1em;
+
+}
+
+.infotext
+{
+  font-size:110%;
+  text-align: center;
+  width: 100%;
+  color: #666666;
+}
+
+.centered
+{
+  text-align:center;
+}
+
+.buttons-sidebyside
+{
+  justify-content: center;
+}
+
 </style>
   
