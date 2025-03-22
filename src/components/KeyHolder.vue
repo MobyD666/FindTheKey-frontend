@@ -387,7 +387,7 @@ const unfairs = computed(() =>
           />
           <button aria-label="Add" @click="addBlocker()" v-show="blockersEdit" class="standardbutton">➕ Add blocker</button>
         </div>
-        <button aria-label="Edit blockers" @click="blockersEdit=true" v-show="!blockersEdit && showBlockers" >Edit blockers</button>
+        <button aria-label="Edit blockers" @click="blockersEdit=true" v-show="!blockersEdit && showBlockers" :disabled="basicInfo.trusted!==true">Edit blockers</button>
         <div class="buttons-sidebyside" v-show="showBlockers">
           <button aria-label="Cancel edits" @click="cancelBlockers();" v-show="blockersEdit" class="standardbutton cancelbutton" >Cancel edits</button>
           <button aria-label="Save blockers" @click="saveBlockers()" v-show="blockersEdit"  class="standardbutton okbutton">Save blockers</button>
@@ -401,7 +401,7 @@ const unfairs = computed(() =>
         </div>
         <div class="centered" v-show="showUnfairSettings">
           <SliderList :modelValue="localUnfairSettings" :enabled="(basicInfo.trusted==true) && (unfairSettingsEdit)"  @update:model-value=" (value)=>updateUnfairSettings(value)"/>
-          <button aria-label="Edit settings" @click="unfairSettingsEdit=true" v-show="!unfairSettingsEdit" >Edit unfair settings</button>
+          <button aria-label="Edit settings" @click="unfairSettingsEdit=true" v-show="!unfairSettingsEdit" :disabled="basicInfo.trusted!==true">Edit unfair settings</button>
           <div class="buttons-sidebyside">
             <button aria-label="Cancel edits" @click="cancelUnfairSettings();" v-show="unfairSettingsEdit" class="standardbutton cancelbutton" >Cancel edits</button>
             <button aria-label="Save unfair events" @click="saveUnfairSettings()" v-show="unfairSettingsEdit"  class="standardbutton okbutton">Save unfair events</button>
@@ -437,7 +437,7 @@ const unfairs = computed(() =>
               />
               <button aria-label="Add" @click="addUnfair()" v-show="unfairsEdit" class="standardbutton">➕ Add</button>
             </div>
-            <button aria-label="Edit unfair events" @click="unfairsEdit=true" v-show="!unfairsEdit" >Edit unfair events</button>
+            <button aria-label="Edit unfair events" @click="unfairsEdit=true" v-show="!unfairsEdit" :disabled="basicInfo.trusted!==true">Edit unfair events</button>
             <div class="buttons-sidebyside">
               <button aria-label="Cancel edits" @click="cancelUnfairs();" v-show="unfairsEdit" class="standardbutton cancelbutton" >Cancel edits</button>
               <button aria-label="Save unfair events" @click="saveUnfairs()" v-show="unfairsEdit"  class="standardbutton okbutton">Save unfair events</button>

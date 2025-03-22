@@ -83,7 +83,7 @@ async function stopReload()
 
 <template>
   <div class="content-card" style="width:90% !important;">
-    <div v-if="basicInfo.gamestate=='started'">
+    <div v-if="basicInfo.gamestate=='started' || basicInfo.gamestate==undefined">
       <ActionsDisplayInfo :basicInfo="basicInfo" @reloadBasicInfoNeeded="reloadBasicInfo"/>
       <BlockListWearer :blocks="basicInfo.blocks" v-if="basicInfo.blocks.length>0" :seed="basicInfo.seed" />
       <div v-if="basicInfo.blocks.length==0">

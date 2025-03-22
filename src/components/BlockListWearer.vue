@@ -133,7 +133,6 @@ const messages_task_failed = [
 ];
 
 const messages_jigsaw_complete = [
-{message:"Task requires a sacrifice. Will you pay the price?",icon:faPuzzlePiece},
 {message:"Piece together the path to your freedom. Ready to fit in?",ivon:faPuzzlePiece},
 {message:"Missing a piece of the puzzle? Better start looking!",ivon:faPuzzlePiece},
 {message:"Your solution lies in the pieces. Can you assemble the answer?",ivon:faPuzzlePiece},

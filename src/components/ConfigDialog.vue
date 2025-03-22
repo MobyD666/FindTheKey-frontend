@@ -19,6 +19,7 @@
               You can read more in keyholder documentation <a href="https://ext-prod2.techspace.cz/ftk/docs/docs/keyholder" target="_blank">here</a>.
             </div>
             
+            <div class="config-line-spacer" />
             <div class="subheader">
               Blockers:
             </div>
@@ -44,6 +45,7 @@
               <button aria-label="Add" @click="addBlocker()"  class="standardbutton">➕ Add blocker</button>
             </div>  
 
+            <div class="config-line-spacer" />
             <div class="subheader">
               Global unfairness settings:
             </div>
@@ -51,7 +53,7 @@
               <SliderList :modelValue="startupUnfairSettingsComputed" :enabled="true"  @update:model-value=" (value)=>updateUnfairSettings(value)"/>
             </div>
 
-
+            <div class="config-line-spacer" />
             <div class="subheader">
               Individual unfairness events:
             </div>
